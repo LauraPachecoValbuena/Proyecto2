@@ -1,0 +1,229 @@
+<% include _header %>
+
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-6">
+          <div class="form-group">
+            <h4>Name</h4>
+            <input
+              type="text"
+              id="name"
+              placeholder="Pet's Name"
+              class="form-control"
+            />
+            <br />
+            <h4>Pets' Type</h4>
+            <input
+              type="text"
+              id="type"
+              placeholder="Pet's type"
+              class="form-control"
+            />
+            <br />
+            <h4>Breed</h4>
+            <input
+              type="text"
+              id="breed"
+              placeholder="Pet's breed"
+              class="form-control"
+            />
+            <br />
+            <h4>Owner's name</h4>
+            <input
+              type="text"
+              id="owner_name"
+              placeholder="Owner's name"
+              class="form-control"
+            />
+            <br />
+            <h4>Owner's surname</h4>
+            <input
+              type="text"
+              id="owner_surname"
+              placeholder="Owner's surname"
+              class="form-control"
+            />
+            <br />
+            <div class="onlyAdmin">
+              <h4>Owner's DNI</h4>
+              <input type="text" id="owner_dni" class="form-control" />
+            </div>
+            <br />
+            <h4>Owner's telephone</h4>
+            <input
+              type="number"
+              id="owner_telephone"
+              placeholder="Owner's telephone"
+              class="form-control"
+            />
+            <br />
+            <h4>Owner's email</h4>
+            <input
+              type="text"
+              id="owner_email"
+              placeholder="Owner's email"
+              class="form-control"
+            />
+            <br />
+            <div class="onlyAdmin">
+                <h4>Owner's Bank Account</h4>
+                <input type="text" id="owner_bankaccount" class="form-control" />
+              </div>
+              <br />
+              <fieldset class="form-group">
+                  <div class="row">
+                    <legend class="col-form-label col-sm-2 pt-0">Vaccines</legend>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="gridRadios" id="vaccines_rabies" value="">
+                        <label class="form-check-label" for="gridRadios1">
+                          Rabies Vaccine
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="gridRadios" id="vaccines_distemper" value="">
+                        <label class="form-check-label" for="gridRadios2">
+                          Distemper Vaccine
+                        </label>
+                      </div>
+                      <div class="form-check disabled">
+                        <input class="form-check-input" type="checkbox" name="gridRadios" id="vaccines_leishmaniasis" value="">
+                        <label class="form-check-label" for="gridRadios3">
+                          Leishmaniasis Vaccine
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset> 
+                <div class="form-group">
+    
+                    <label for="exampleFormControlTextarea1">Comments</label>
+                    <textarea class="form-control" id="comments" rows="3"></textarea>
+                  </div>
+
+                  <fieldset class="form-group" id="onlyAdminStatus">
+                      <div class="row">
+                        <legend class="col-form-label col-sm-2 pt-0">Status</legend>
+                        <div class="col-sm-10">
+                          <div class="onlyAdmin">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="isActive" value="true">
+                            <label class="form-check-label" for="gridRadios1">
+                              Active
+                            </label>
+                          </div>
+                          <div class="onlyAdmin">
+                            <input class="form-check-input" type="radio" name="gridRadios" id="isActiveNo" value="false">
+                            <label class="form-check-label" for="gridRadios2">
+                              Desactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+              
+
+
+
+          </div>
+          <button type="submit" class="btn btn-outline-info" onclick="edit()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      const decode = jwt_decode(token);
+      if (!decode.isAdmin) {
+        document.getElementsByClassName("onlyAdmin")[0].remove();
+
+      }
+
+      const id = location.pathname.split(["/"]).slice(-1)[0];
+
+      fetch("/api/pets/" + id, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: "Bearer " + token
+        }
+      })
+        .then(response => response.json())
+        .then(pet => {
+          document.getElementById("name").value = pet.name;
+          document.getElementById("type").value = pet.type;
+          document.getElementById("breed").value = pet.breed;
+          document.getElementById("owner_name").value = pet.owner_name;
+          document.getElementById("owner_surname").value = pet.owner_surname;
+          document.getElementById("owner_telephone").value = pet.owner_telephone;
+          document.getElementById("owner_email").value = pet.owner_email;
+          document.getElementById("vaccines_rabies").checked = pet.vaccines_rabies;
+          document.getElementById("vaccines_distemper").checked = pet.vaccines_distemper;
+          document.getElementById("vaccines_leishmaniasis").checked = pet.vaccines_leishmaniasis;
+          document.getElementById("comments").value = pet.comments;
+          if (decode.isAdmin) {
+            document.getElementById("owner_dni").value = pet.owner_dni;
+            document.getElementById("owner_bankaccount").value = pet.owner_bankaccount;
+            document.getElementById("isActive").checked = pet.isActive;
+            document.getElementById("isActiveNo").checked = pet.isActive;
+          }
+        });
+
+      function edit() {
+        const token = localStorage.getItem("token");
+        const decode = jwt_decode(token);
+        const name = document.getElementById("name").value;
+        const type = document.getElementById("type").value;
+        const breed = document.getElementById("breed").value;
+        const owner_name = document.getElementById("owner_name").value;
+        const owner_surname = document.getElementById("owner_surname").value;
+        let owner_dni = null;
+        const owner_telephone = document.getElementById("owner_telephone").value;
+        const owner_email = document.getElementById("owner_email").value;
+        let owner_bankaccount = null;
+        const vaccines_rabies = document.getElementById("vaccines_rabies").checked;
+        const vaccines_distemper = document.getElementById("vaccines_distemper").checked;
+        const vaccines_leishmaniasis = document.getElementById("vaccines_leishmaniasis").checked;
+        const comments = document.getElementById("comments").value;
+        let isActive = null;
+        let isActiveNo = null;
+        if (decode.isAdmin) {
+          owner_dni = document.getElementById("owner_dni").value;
+          owner_bankaccount = document.getElementById("owner_bankaccount").value
+          isActive = document.getElementById("isActive").checked;
+          isActiveNo = document.getElementById("isActiveNo").checked;
+        }
+
+        const id = location.pathname.split(["/"]).slice(-1)[0];
+
+        fetch("/api/pets/" + id, {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify({
+            name: name,
+            type: type,
+            breed: breed,
+            owner_name: owner_name,
+            owner_surname: owner_surname,
+            ...(owner_dni != "" && {owner_dni: owner_dni}),
+            owner_telephone: owner_telephone,
+            owner_email: owner_email,
+            ...(owner_bankaccount != "" && {owner_bankaccount: owner_bankaccount}),
+            vaccines_rabies: vaccines_rabies,
+            vaccines_distemper: vaccines_distemper,
+            vaccines_leishmaniasis: vaccines_leishmaniasis,
+            comments: comments,
+            ...(isActive != "" && {isActive: isActive}),
+            ...(isActiveNo != "" && {isActiveNo: isActiveNo})
+          })
+        }).then(res => {
+          if (res.ok) {
+            location.href = "/pets";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

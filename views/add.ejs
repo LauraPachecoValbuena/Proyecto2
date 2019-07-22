@@ -1,0 +1,77 @@
+<% include _header %>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-6">
+          <div class="form-group">
+            <h4>Usuario</h4>
+            <input
+              type="text"
+              id="username"
+              placeholder="Usuario"
+              class="form-control"
+              required
+            />
+            <br />
+            <h4>Contraseña</h4>
+            <input
+              type="password"
+              id="password"
+              placeholder="Contraseña"
+              class="form-control"
+              required
+            />
+            <br />
+            <div class="onlyAdmin">
+              <h4>Administrador</h4>
+              <input type="checkbox" id="isAdmin" class="form-control" />
+            </div>
+            <br />
+            <h4>Email</h4>
+            <input
+              type="text"
+              id="email"
+              placeholder="Email"
+              class="form-control"
+              required
+            />
+            <br />
+            <p id="camposvacios"></p>
+          </div>
+          <button class="btn btn-outline-info" onclick="save()">Save</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      function save() {
+        const token = localStorage.getItem("token");
+        const decode = jwt_decode(token);
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const isAdmin = document.getElementById("isAdmin").checked;
+        const email = document.getElementById("email").value;
+        if (username != "" && password != "" && email != ""){
+
+        fetch("/api/users/", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            isAdmin: isAdmin,
+            email: email
+          })
+        }).then(res => {
+          if (res.ok) {
+            location.href = "/users";
+          }
+        });
+      }else{
+        document.getElementById("camposvacios").innerHTML = "Tienes que rellenar todos los campos";
+      }
+      }
+    </script>
+  </body>
+</html>

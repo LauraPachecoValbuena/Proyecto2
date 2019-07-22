@@ -1,0 +1,213 @@
+<% include _header %>
+
+<body>
+  <div class="container-fluid">
+    <div class="row justify-content-center" id="table">
+      <table class="table table-bordered hover">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Breed</th>
+            <th scope="col">Owner Name</th>
+            <th scope="col">Owner Surname</th>
+            <th scope="col">Owner DNI</th>
+            <th scope="col">Owner Telephone</th>
+            <th scope="col">Owner Email</th>
+            <th scope="col">Owner Bank Account</th>
+            <th scope="col">Rabies Vaccine</th>
+            <th scope="col">Distemper Vaccine</th>
+            <th scope="col">Leishmaniasis Vaccine</th>
+            <th scope="col">Comments</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+
+  <span></span>
+  <br />
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6">
+        <a
+          class="btn btn-outline-info"
+          href="/pets/add"
+          role="button"
+          id="botonAddPet"
+          >Add new pet</a
+        >
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const token = localStorage.getItem("token");
+  const decode = jwt_decode(token);
+
+  fetch("api/pets", {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: "Bearer " + token
+    }
+  }).then(response => {
+    if (response.ok) {
+      response.json().then(json => {
+        const table = document.getElementsByTagName("table")[0];
+        json.map(pet => {
+          if (decode.isAdmin) {
+            const tr = document.createElement("tr");
+            table.appendChild(tr);
+            const td1 = document.createElement("td");
+            tr.appendChild(td1);
+            td1.innerText = pet.name;
+            const td2 = document.createElement("td");
+            tr.appendChild(td2);
+            td2.innerText = pet.type;
+            const td3 = document.createElement("td");
+            tr.appendChild(td3);
+            td3.innerText = pet.breed;
+            const td4 = document.createElement("td");
+            tr.appendChild(td4);
+            td4.innerText = pet.owner_name;
+            const td5 = document.createElement("td");
+            tr.appendChild(td5);
+            td5.innerText = pet.owner_surname;
+            const td6 = document.createElement("td");
+            tr.appendChild(td6);
+            td6.innerText = pet.owner_dni;
+            const td7 = document.createElement("td");
+            tr.appendChild(td7);
+            td7.innerText = pet.owner_telephone;
+            const td8 = document.createElement("td");
+            tr.appendChild(td8);
+            td8.innerText = pet.owner_email;
+            const td9 = document.createElement("td");
+            tr.appendChild(td9);
+            td9.innerText = pet.owner_bankaccount;
+            const imgValid = document.createElement("img");
+            imgValid.src = "/images/CkeckedOk.png";
+            imgValid.width = 20;
+            const imgInvalid = document.createElement("img");
+            imgInvalid.src = "/images/notCheked.png";
+            imgInvalid.width = 20;
+
+            const td10 = document.createElement("td");
+            tr.appendChild(td10);
+            td10.appendChild(pet.vaccines_rabies ? imgValid.cloneNode() : imgInvalid.cloneNode());
+
+            const td11 = document.createElement("td");
+            tr.appendChild(td11);
+            td11.appendChild(pet.vaccines_distemper ? imgValid.cloneNode() : imgInvalid.cloneNode());
+
+            const td12 = document.createElement("td");
+            tr.appendChild(td12);
+            td12.appendChild(
+              pet.vaccines_leishmaniasis ? imgValid.cloneNode() : imgInvalid.cloneNode()
+            );
+            const td13 = document.createElement("td");
+            tr.appendChild(td13);
+            td13.innerText = pet.comments;
+            // const td14 = document.createElement("td");
+            // tr.appendChild(td14);
+            // td14.innerText = pet.isActive;
+
+            const td15 = document.createElement("td");
+            tr.appendChild(td15);
+            const btn1 = document.createElement("button");
+            btn1.innerText = "EDIT";
+            btn1.id = "botonEditar";
+            btn1.onclick = () => {
+              location.href = "/pets/" + pet._id;
+            };
+            td15.appendChild(btn1);
+            const td16 = document.createElement("td");
+            tr.appendChild(td16);
+            const btn2 = document.createElement("button");
+            btn2.innerText = "DELETE";
+            btn2.id = "botonBorrar";
+            btn2.onclick = () => {
+              fetch("/api/pets/" + pet._id, {
+                method: "DELETE",
+                headers: {
+                  "Content-type": "application/json",
+                  Authorization: "Bearer " + token
+                }
+              });
+              location.href = "/pets";
+            };
+            td16.appendChild(btn2);
+          } else {
+            const tr = document.createElement("tr");
+            table.appendChild(tr);
+            const td1 = document.createElement("td");
+            tr.appendChild(td1);
+            td1.innerText = pet.name;
+            const td2 = document.createElement("td");
+            tr.appendChild(td2);
+            td2.innerText = pet.type;
+            const td3 = document.createElement("td");
+            tr.appendChild(td3);
+            td3.innerText = pet.breed;
+            const td4 = document.createElement("td");
+            tr.appendChild(td4);
+            td4.innerText = pet.owner_name;
+            const td5 = document.createElement("td");
+            tr.appendChild(td5);
+            td5.innerText = pet.owner_surname;
+            const td6 = document.createElement("td");
+            tr.appendChild(td6);
+            td6.innerText = null;
+            const td7 = document.createElement("td");
+            tr.appendChild(td7);
+            td7.innerText = pet.owner_telephone;
+            const td8 = document.createElement("td");
+            tr.appendChild(td8);
+            td8.innerText = pet.owner_email;
+            const td9 = document.createElement("td");
+            tr.appendChild(td9);
+            td9.innerText = null;
+
+            const imgValid = document.createElement("img");
+            imgValid.src = "/images/CkeckedOk.png";
+            imgValid.width = 20;
+            const imgInvalid = document.createElement("img");
+            imgInvalid.src = "/images/notCheked.png";
+            imgInvalid.width = 20;
+
+            const td10 = document.createElement("td");
+            tr.appendChild(td10);
+            td10.appendChild(pet.vaccines_rabies ? imgValid.cloneNode() : imgInvalid.cloneNode());
+
+            const td11 = document.createElement("td");
+            tr.appendChild(td11);
+            td11.appendChild(pet.vaccines_distemper ? imgValid.cloneNode() : imgInvalid.cloneNode());
+
+            const td12 = document.createElement("td");
+            tr.appendChild(td12);
+            td12.appendChild(
+              pet.vaccines_leishmaniasis ? imgValid.cloneNode() : imgInvalid.cloneNode()
+            );
+
+            const td13 = document.createElement("td");
+            tr.appendChild(td13);
+            td13.innerText = pet.comments;
+
+            const td15 = document.createElement("td");
+            tr.appendChild(td15);
+            const btn1 = document.createElement("button");
+            btn1.innerText = "EDIT";
+            btn1.id = "botonEditarNoAdmin";
+            btn1.onclick = () => {
+              location.href = "/pets/" + pet._id;
+            };
+            td15.appendChild(btn1);
+          }
+        });
+      });
+    }
+  });
+</script>

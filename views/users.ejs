@@ -1,0 +1,111 @@
+<% include _header %>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <table class="table table-hover">
+        <thead>
+          <tr id="cabeceraTabla">
+            <th scope="col">Name</th>
+            <th></th>
+            <th></th>
+            
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <span></span>
+  </div>
+
+  <br />
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6">
+        <a id="newUserButton" class="btn btn-outline-info" href="/users/add" role="button"
+          >Add new user</a
+        >
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const token = localStorage.getItem("token");
+  const decode = jwt_decode(token);
+  console.log(decode);
+  if (!decode.isAdmin) {
+    document.getElementById("newUserButton").remove(); //aqui estamos quitando el botón de añadir. Si No es Admin.
+    const span = document.getElementsByTagName("span")[0];
+    const btn = document.createElement("button");
+    btn.innerText = "EDIT";
+    btn.id = "botonEditarNoAdminUser";
+    btn.onclick = () => {
+      location.href = "/users/" + decode.id;
+    };
+    span.appendChild(btn);
+  }
+  fetch("api/users", {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: "Bearer " + token
+    }
+  }).then(response => {
+    if (response.ok) {
+      response.json().then(json => {
+        const table = document.getElementsByTagName("table")[0];
+        //Si somos admin, añadimos la cabecera Email
+        if (decode.isAdmin) {
+          let cabeceraMail = document.createElement("th");
+          cabeceraMail.innerText = 'Email';
+          let cabeceraTabla = document.getElementById("cabeceraTabla");
+          cabeceraTabla.insertBefore(cabeceraMail, cabeceraTabla.children[1]);
+        }
+
+        //bucle que pinta usuarios
+        json.map(user => {
+          if (decode.isAdmin) {
+            const tr = document.createElement("tr");
+            table.appendChild(tr);
+            const td1 = document.createElement("td");
+            tr.appendChild(td1);
+            td1.innerText = user.username;
+            const td2 = document.createElement("td");
+            tr.appendChild(td2);
+            td2.innerText = user.email;
+            const td3 = document.createElement("td");
+            tr.appendChild(td3);
+            const btn1 = document.createElement("button");
+            btn1.innerText = "EDIT";
+            btn1.id = "botonEditar";
+            btn1.onclick = () => {
+              location.href = "/users/" + user._id;
+            };
+            td3.appendChild(btn1);
+            const td4 = document.createElement("td");
+            tr.appendChild(td4);
+            const btn2 = document.createElement("button");
+            btn2.innerText = "DELETE";
+            btn2.id = "botonBorrar";
+            btn2.onclick = () => {
+              fetch("/api/users/" + user._id, {
+                method: "DELETE",
+                headers: {
+                  "Content-type": "application/json",
+                  Authorization: "Bearer " + token
+                }
+              });
+              location.href = "/users";
+            };
+            td4.appendChild(btn2);
+          } else {
+            const tr = document.createElement("tr");
+            table.appendChild(tr);
+            const td1 = document.createElement("td");
+            tr.appendChild(td1);
+            td1.innerText = user.username;
+          }
+        });
+      });
+    }
+  });
+</script>

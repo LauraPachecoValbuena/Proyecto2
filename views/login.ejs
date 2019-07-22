@@ -1,0 +1,54 @@
+<% include _headerlogin %>
+<div class="container">
+  <div class="row justify-content-center" >
+    <div class="col-6">
+      <div class="form-group" id="login">
+        <h4>Usuario</h4>
+        <input
+          type="text"
+          id="username"
+          placeholder="Usuario"
+          class="form-control"
+        />
+        <br />
+        <h4>Contraseña</h4>
+        <input
+          type="password"
+          id="password"
+          placeholder="Contraseña"
+          class="form-control"
+        />
+      </div>
+      <br>
+      <button type="submit" class="btn btn-outline-info" onclick="getToken()">
+        Sign in
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+  function getToken() {
+    const usernameValue = document.getElementById("username").value;
+    const passwordValue = document.getElementById("password").value;
+    fetch("api/auth", {
+      //ésta función es una promesa.
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user: usernameValue, //user es como hemos declarado en el req.body de la api.js y lo de dsp de : usernameValue como hemos declarado la constante.
+        password: passwordValue
+      })
+    }).then(res => {
+      if (res.ok) {
+        res.text().then(text => {
+          localStorage.setItem("token", text);
+          location.href = "/pets";
+        });
+      }
+    });
+  }
+</script>
+
+<% include _footer %>
