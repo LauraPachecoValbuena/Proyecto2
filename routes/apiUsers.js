@@ -11,7 +11,8 @@ router.get("/", function(req, res) {
     {
       projection: {
         username: 1,
-        email: 1
+        email: 1, 
+        isAdmin: 1
       }
     }
   );
@@ -165,7 +166,7 @@ router.put("/:id", function(req, res) {
               },
               {
                 projection: {
-                  _id: 0,
+                  // _id: 0,
                   password: 0
                 }
               }
